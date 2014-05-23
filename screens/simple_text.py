@@ -13,8 +13,8 @@ from PIL import Image, ImageDraw, ImageFont
 BLACK=0
 WHITE=1
 
-import _common
-class Screen(_common.Screen):
+import _basic
+class Screen(_basic.Screen):
 	def OnInit(self):
 		image = Image.new("1", (self.Width, self.Height), BLACK)
 		draw = ImageDraw.Draw(image)
@@ -25,7 +25,5 @@ class Screen(_common.Screen):
 	def OnDisplay(self):
 		pass
 	def OnClose(self):
-		pass
-	def getImage(self):
 		pass
 

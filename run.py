@@ -142,14 +142,16 @@ try:
 				sdisp.sdisp_display__buffer_set_pixels(
 					sdisp_ctx,
 					0,
-					SCREENS[screen].ImageBuffer
+					SCREENS[screen].getImageBuffer()
 				)
 				sdisp.sdisp_display__buffer_draw(sdisp_ctx)
 				time.sleep(SCREENS[screen].Duration)
 except KeyboardInterrupt:
 	pass
 
-
+for screen in SCREENS:
+	SCREENS[screen].OnClose()
+	
 sdisp.sdisp_close(sdisp_ctx)
 
 

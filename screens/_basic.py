@@ -13,7 +13,7 @@ class Screen():
 	Info=None
 	Duration=None
 
-	ImageBuffer=[]
+	ImageBuffer=None
 	Width=None
 	Height=None
 	
@@ -39,6 +39,5 @@ class Screen():
 	def OnClose(self):
 		pass
 	
-	def getImage(self):
-		pass
-
+	def getImageBuffer(self):
+		return self.ImageBuffer
