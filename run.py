@@ -44,6 +44,11 @@ parser.add_argument(
 	help='setgid to group'
 )
 
+parser.add_argument(
+	'-s','--screen', type=str, default=None,
+	help='force screen'
+)
+
 args = parser.parse_args()
 	
 """read config"""
@@ -117,7 +122,12 @@ displayInfo={
 }
 #try to create screens
 SCREENS={}
-for screenInstanceName in config['screens']:
+if args.screen != None:
+	USED_SCREENS=[args.screen]
+else:
+	USED_SCREENS=config['screens']
+	
+for screenInstanceName in USED_SCREENS:
 	screen_package=			config['screens'][screenInstanceName][0]
 	screen_duration=		config['screens'][screenInstanceName][1]
 	screen_config=			config['screens'][screenInstanceName][2]
@@ -134,6 +144,7 @@ for screenInstanceName in config['screens']:
 		logging.info("Screen %s [%s] created"%(screenInstanceName,screen_package))
 
 import time
+	
 try:
 	while True:
 		for screen in SCREENS:
