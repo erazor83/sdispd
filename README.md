@@ -4,7 +4,7 @@ Python daemon for small displays which displays various pages.
 
 install
 -------------------------
-You'll need python pylibsdisp and yaml.
+You'll need python libsdisp with python-support and yaml.
 
 license
 -------------------------
@@ -19,4 +19,6 @@ Copyright Alexander Krause
 links
 -------------------------
   * http://python.org
+  * http://www.yaml.org
+  * https://github.com/erazor83/libsdisp
   * https://github.com/TobiasSimon/pyssd1306
