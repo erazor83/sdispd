@@ -4,9 +4,11 @@
 	common Screen base class
 """
 __author__	= """Alexander Krause <alexander.krause@ed-solutions.de>"""
-__date__ 		= "2014-05-23"
-__version__	= "0.0.1"
+__date__ 		= "2014-05-24"
+__version__	= "0.0.2"
 __license__ = "GPL"
+
+import time
 
 class Screen():
 	Conf=None
@@ -16,6 +18,8 @@ class Screen():
 	ImageBuffer=None
 	Width=None
 	Height=None
+	
+	active=False
 	
 	def __init__(self,conf,info,duration):
 		self.Conf=conf
@@ -30,6 +34,13 @@ class Screen():
 		self.OnInit()
 		
 
+	def activate(self):
+		self.active=True
+		
+	def deactivate(self):
+		self.active=False
+		
+		
 	def OnInit(self):
 		pass
 
@@ -41,3 +52,9 @@ class Screen():
 	
 	def getImageBuffer(self):
 		return self.ImageBuffer
+
+	def Update(self):
+		pass
+	
+	def UpdateRegion(self):
+		pass

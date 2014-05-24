@@ -4,8 +4,8 @@
 	deamon for libsdisp
 """
 __author__	= """Alexander Krause <alexander.krause@ed-solutions.de>"""
-__date__ 		= "2014-05-23"
-__version__	= "0.0.1"
+__date__ 		= "2014-05-24"
+__version__	= "0.0.2"
 __license__ = "GPL"
 
 import os
@@ -121,6 +121,10 @@ displayInfo={
 	'features':		sdisp.sdisp_display__getFeatures(sdisp_ctx)
 }
 #try to create screens
+
+import sys
+sys.path.append(BASE_DIR+'screens/')
+
 SCREENS={}
 if args.screen != None:
 	USED_SCREENS=[args.screen]
@@ -131,7 +135,7 @@ for screenInstanceName in USED_SCREENS:
 	screen_package=			config['screens'][screenInstanceName][0]
 	screen_duration=		config['screens'][screenInstanceName][1]
 	screen_config=			config['screens'][screenInstanceName][2]
-	if os.path.isfile(BASE_DIR+'screens/'+screen_package+'.py'):
+	if os.path.isfile(BASE_DIR+'screens/'+screen_package.replace('.','/')+'.py'):
 		package_name='screens.'+screen_package
 		if not sys.modules.has_key(package_name):
 			__import__(package_name, globals(), locals(), [])
@@ -148,15 +152,23 @@ import time
 try:
 	while True:
 		for screen in SCREENS:
+			SCREENS[screen].activate()
 			if SCREENS[screen].ImageBuffer:
 				logging.info("Showing %s..."%screen)
+				
 				sdisp.sdisp_display__buffer_set_pixels(
 					sdisp_ctx,
 					0,
 					SCREENS[screen].getImageBuffer()
 				)
 				sdisp.sdisp_display__buffer_draw(sdisp_ctx)
-				time.sleep(SCREENS[screen].Duration)
+			
+			t_end=time.time()+SCREENS[screen].Duration
+			while (time.time()<t_end):
+				time.sleep(0.2)
+				SCREENS[screen].OnDisplay()
+				
+			SCREENS[screen].deactivate()
 except KeyboardInterrupt:
 	pass
 
