@@ -4,8 +4,8 @@
 	deamon for libsdisp
 """
 __author__	= """Alexander Krause <alexander.krause@ed-solutions.de>"""
-__date__ 		= "2014-05-24"
-__version__	= "0.0.2"
+__date__ 		= "2014-05-25"
+__version__	= "0.0.3"
 __license__ = "GPL"
 
 import os
@@ -88,41 +88,16 @@ if args.user != None:
 
 
 #init display
-import sdisp
-dsp_type=config['display']['type']
-if 		dsp_type=='crius':
-	sdisp_ctx=sdisp.sdisp_new_crius(
-		int(config['display']['bus'])
-	)
-elif	dsp_type=='ssd1306':
-	sdisp_ctx=sdisp.sdisp_new_ssd1306(
-		int(config['display']['bus'])
-	)
-elif	dsp_type=='ssd1327':
-	sdisp_ctx=sdisp.sdisp_new_ssd1327(
-		int(config['display']['bus'])
-	)
-else:
-	logging.error("Display type not supported!")
-	sys.exit(-1)
-logging.info("Created display %s"%dsp_type)
+import sys
+sys.path.append(BASE_DIR+'inc/')
+import sdisp_display
 
-if 'debug' in config['display'] and config['display']['debug']:
-	sdisp.sdisp_set_debug(sdisp_ctx,True)
-else:
-	sdisp.sdisp_set_debug(sdisp_ctx,False)
+currentDisplay=sdisp_display.Display(config['display'])
+currentDisplay.open()
+currentDisplay.getInfo()
 
-sdisp.sdisp_display__init(sdisp_ctx)
-	
-#get display info
-displayInfo={
-	'width':			sdisp.sdisp_display__getWidth(sdisp_ctx),
-	'height':			sdisp.sdisp_display__getHeight(sdisp_ctx),
-	'features':		sdisp.sdisp_display__getFeatures(sdisp_ctx)
-}
 #try to create screens
 
-import sys
 sys.path.append(BASE_DIR+'screens/')
 
 SCREENS={}
@@ -132,17 +107,23 @@ else:
 	USED_SCREENS=config['screens']
 	
 for screenInstanceName in USED_SCREENS:
-	screen_package=			config['screens'][screenInstanceName][0]
-	screen_duration=		config['screens'][screenInstanceName][1]
-	screen_config=			config['screens'][screenInstanceName][2]
+	cConfig=config['screens'][screenInstanceName]
+	if len(cConfig)==1:
+		cConfig.append(10)
+	if len(cConfig)==2:
+		cConfig.append({})
+		
+	screen_package=			cConfig[0]
+	screen_duration=		cConfig[1]
+	screen_config=			cConfig[2]
 	if os.path.isfile(BASE_DIR+'screens/'+screen_package.replace('.','/')+'.py'):
 		package_name='screens.'+screen_package
 		if not sys.modules.has_key(package_name):
 			__import__(package_name, globals(), locals(), [])
 			sys.modules[package_name].FONT_PATH=BASE_DIR+'fonts/'
 		SCREENS[screenInstanceName]=sys.modules[package_name].Screen(
+			currentDisplay,
 			screen_config,
-			displayInfo,
 			screen_duration
 		)
 		logging.info("Screen %s [%s] created"%(screenInstanceName,screen_package))
@@ -153,17 +134,7 @@ try:
 	while True:
 		for screen in SCREENS:
 			SCREENS[screen].activate()
-			if SCREENS[screen].ImageBuffer:
-				logging.info("Showing %s..."%screen)
-				
-				sdisp.sdisp_display__buffer_set_pixels(
-					sdisp_ctx,
-					0,
-					SCREENS[screen].getImageBuffer()
-				)
-				sdisp.sdisp_display__buffer_draw(sdisp_ctx)
-			
-			t_end=time.time()+SCREENS[screen].Duration
+			t_end=time.time()+SCREENS[screen].duration
 			while (time.time()<t_end):
 				time.sleep(0.2)
 				SCREENS[screen].OnDisplay()
@@ -175,6 +146,5 @@ except KeyboardInterrupt:
 for screen in SCREENS:
 	SCREENS[screen].OnClose()
 	
-sdisp.sdisp_close(sdisp_ctx)
 
-
+currentDisplay.close()

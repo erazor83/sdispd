@@ -15,15 +15,11 @@ WHITE=1
 
 import _basic
 class Screen(_basic.Screen):
+	
 	def OnInit(self):
-		image = Image.new("1", (self.Width, self.Height), BLACK)
+		image = Image.new("1", (self.width, self.height), BLACK)
 		draw = ImageDraw.Draw(image)
 		font1 = ImageFont.truetype(FONT_PATH+"verdana.ttf", 12)
-		draw.text((0, 0),self.Conf['text'],WHITE,font=font1)
+		draw.text((0, 0),self.conf['text'],WHITE,font=font1)
 		self.ImageBuffer=list(image.getdata())
-		
-	def OnDisplay(self):
-		pass
-	def OnClose(self):
-		pass
-
+		self.forceUpdate=True

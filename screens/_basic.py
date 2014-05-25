@@ -11,25 +11,26 @@ __license__ = "GPL"
 import time
 
 class Screen():
-	Conf=None
-	Info=None
-	Duration=None
-
+	conf=None
+	duration=None
+	display=None
+	
 	ImageBuffer=None
-	Width=None
-	Height=None
+	width=None
+	height=None
 	
 	active=False
-	
-	def __init__(self,conf,info,duration):
-		self.Conf=conf
-		self.Info=info
-		self.Duration=duration
+	forceUpdate=None
+
+	def __init__(self,display,conf,duration):
+		self.display=display
+		self.conf=conf
+		self.duration=duration
 		
 		self.ImageBuffer=[]
 		
-		self.Width=info['width']
-		self.Height=info['height']
+		self.width=display.info['width']
+		self.height=display.info['height']
 		
 		self.OnInit()
 		
@@ -44,17 +45,18 @@ class Screen():
 	def OnInit(self):
 		pass
 
+		
 	def OnDisplay(self):
-		pass
+		if self.forceUpdate and self.ImageBuffer:
+			self.UpdateDisplay()
+			self.forceUpdate=False
 	
 	def OnClose(self):
 		pass
-	
-	def getImageBuffer(self):
-		return self.ImageBuffer
 
-	def Update(self):
-		pass
+	def UpdateDisplay(self):
+		self.display.displayBuffer(self.ImageBuffer)
 	
 	def UpdateRegion(self):
-		pass
+		#TODO: add region update
+		self.display.displayBuffer(self.ImageBuffer)
